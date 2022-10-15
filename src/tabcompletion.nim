@@ -51,6 +51,8 @@ proc readLineFromStdin*(): string =
   while true:
     let ch = getch()
     case ch.ord
+    of 0x00:  # Win-Shift(0x10000)
+      continue
     of 0x03:  # ^C
       quit()
     of 0x09:  # TAB
@@ -72,7 +74,7 @@ proc readLineFromStdin*(): string =
       break
     of 0x1b:  # ESC
       pref = $ch
-    of 0x7f:  # BS
+    of 0x7f, 0x08:  # BS
       if isSelecting:
         exitSelecting()
       if pos == 0:
@@ -140,7 +142,7 @@ proc readLineFromStdin*(): string =
         pref = ""
   return $res
 
-proc readLineFromStdin*(prompt: string, isTabComp = true): string =
+proc readLineFromStdin*(prompt: string): string =
   ## Read string from stdin
   stdout.write(prompt)
   stdout.flushFile
